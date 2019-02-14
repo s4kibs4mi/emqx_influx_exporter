@@ -5,7 +5,11 @@ defmodule InfluxExporterCLIHelper do
 
   def write_event(data) do
     case post("/write?db=" <> InfluxExporterEnvHelper.get_influx_dbname(), data) do
-      {:ok, res} -> :ok
+      {:ok, res} ->
+        cond do
+          res.status >= 200 && res.status < 300 -> :ok
+          true -> {:error, "unprocessable entity"}
+        end
       err -> {:error, err}
     end
   end
