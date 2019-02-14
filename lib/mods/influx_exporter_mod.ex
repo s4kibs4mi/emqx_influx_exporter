@@ -36,13 +36,6 @@ defmodule InfluxExporterMod do
   def on_message_publish(msg, _env) do
     {type, id, qos, client_id, flags, user_info, topic, payload, time} = msg
 
-    data = "packet_published client=" <> client_id <> ",topic=" <> topic <> ",type=" <> type <> ",qos=" <> qos <> "i"
-
-    case InfluxExporterCLIHelper.write_event(data) do
-      :ok -> :logger.info("Write successful")
-      {:error, err} -> :logger.error(err)
-    end
-
     if InfluxExporterModHelper.is_message() do
       msg_data = "message_published client=" <> client_id <> ",topic=" <> topic <> ",type=" <> type <> ",qos=" <> qos <> "i"
 
