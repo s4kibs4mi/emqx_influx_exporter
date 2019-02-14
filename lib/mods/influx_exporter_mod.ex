@@ -23,7 +23,9 @@ defmodule InfluxExporterMod do
   end
 
   def on_client_connected(client, connect_code, connect_info, _env) do
-    data = "client_connected client=#{client.client_id},username=#{client.username}"
+    data = ""
+    data = "#{data}client_connected client=\"#{client.client_id}\"\n"
+    data = "#{data}client_connected username=\"#{client.username}\""
 
     case InfluxExporterCLIHelper.write_event(data) do
       :ok -> :logger.info("Write successful")
@@ -37,9 +39,14 @@ defmodule InfluxExporterMod do
     {type, id, qos, client_id, flags, user_info, topic, payload, time} = msg
 
     if InfluxExporterModHelper.is_message(msg) do
-      msg_data = "message_published client=#{client_id},topic=#{topic},type=#{type},qos=#{qos}i"
+      data = ""
+      data = "#{data}message_published client=\"#{client_id}\"\n"
+      data = "#{data}message_published topic=\"#{topic}\"\n"
+      data = "#{data}message_published type=\"#{type}\"\n"
+      data = "#{data}message_published qos=#{qos}i\n"
+      data = "#{data}message_published id=\"#{id}\""
 
-      case InfluxExporterCLIHelper.write_event(msg_data) do
+      case InfluxExporterCLIHelper.write_event(data) do
         :ok -> :logger.info("Write successful")
         {:error, err} -> :logger.error(err)
       end
@@ -51,7 +58,12 @@ defmodule InfluxExporterMod do
   def on_message_delivered(client, msg, _env) do
     {type, id, qos, client_id, flags, user_info, topic, payload, time} = msg
 
-    data = "message_delivered client=#{client_id},topic=#{topic},type=#{type},qos=#{qos}i"
+    data = ""
+    data = "#{data}message_delivered client=\"#{client_id}\"\n"
+    data = "#{data}message_delivered topic=\"#{topic}\"\n"
+    data = "#{data}message_delivered type=\"#{type}\"\n"
+    data = "#{data}message_delivered qos=#{qos}i\n"
+    data = "#{data}message_delivered id=\"#{id}\""
 
     case InfluxExporterCLIHelper.write_event(data) do
       :ok -> :logger.info("Write successful")
@@ -62,7 +74,9 @@ defmodule InfluxExporterMod do
   end
 
   def on_client_disconnected(client, reason_code, _env) do
-    data = "client_disconnected client=#{client.client_id},username=#{client.username}"
+    data = ""
+    data = "#{data}client_disconnected client=\"#{client.client_id}\"\n"
+    data = "#{data}client_disconnected username=\"#{client.username}\""
 
     case InfluxExporterCLIHelper.write_event(data) do
       :ok -> :logger.info("Write successful")
