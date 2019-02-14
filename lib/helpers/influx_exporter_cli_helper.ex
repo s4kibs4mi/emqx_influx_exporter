@@ -4,6 +4,8 @@ defmodule InfluxExporterCLIHelper do
   plug Tesla.Middleware.BaseUrl, InfluxExporterEnvHelper.get_influx_url()
 
   def write_event(data) do
+    :logger.info(data)
+
     case post("/write?db=" <> InfluxExporterEnvHelper.get_influx_dbname(), data) do
       {:ok, res} ->
         cond do
